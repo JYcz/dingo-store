@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+import "version.proto";
+
+package dingodb.pb.test;
+
+option java_package = "io.dingodb.test";
+option cc_generic_services = true;
+
+
+message IncVersionRequest {
+  dingodb.pb.version.VersionId verId = 1;
+}
+
+message AddVersionRequest {
+  dingodb.pb.version.VersionId verId = 1;
+}
+
+message DelVersionRequest {
+  dingodb.pb.version.VersionId verId = 1;
+}
+
+message Response {
+  uint64 version = 1;
+}
+
+service TestService {
+
+  rpc IncVersion(IncVersionRequest) returns (Response) {}
+
+  rpc AddVersion(AddVersionRequest) returns (Response) {}
+
+  rpc DelVersion(DelVersionRequest) returns (Response) {}
+
+}

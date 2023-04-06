@@ -92,7 +92,7 @@ foreach(msg ${MSG_PROTOS})
                  "${CMAKE_CURRENT_BINARY_DIR}/proto/${FIL_WE}.pb.h"
           COMMAND  ${PROTOBUF_PROTOC_EXECUTABLE}
           ARGS --cpp_out  ${PROTO_META_BASE_DIR}
-            -I ${CMAKE_SOURCE_DIR}/proto
+            -I ${CMAKE_SOURCE_DIR}/proto 
             ${msg}
           DEPENDS protobuf ${msg}
           COMMENT "Running C++ protocol buffer compiler on ${msg}"
@@ -204,12 +204,17 @@ add_executable(dingodb_client_store src/client/store_client.cc $<TARGET_OBJECTS:
 add_executable(dingodb_client_coordinator src/client/coordinator_client.cc $<TARGET_OBJECTS:PROTO_OBJS>)
 add_executable(dingodb_client_meta src/client/meta_client.cc $<TARGET_OBJECTS:PROTO_OBJS>)
 
+add_executable(test_server local/server.cc $<TARGET_OBJECTS:DINGODB_OBJS> $<TARGET_OBJECTS:PROTO_OBJS>)
+add_executable(test_client local/client.cc $<TARGET_OBJECTS:DINGODB_OBJS> $<TARGET_OBJECTS:PROTO_OBJS>)
 
 add_dependencies(DINGODB_OBJS ${DEPEND_LIBS})
 add_dependencies(dingodb_server ${DEPEND_LIBS})
 add_dependencies(dingodb_client_store ${DEPEND_LIBS})
 add_dependencies(dingodb_client_coordinator ${DEPEND_LIBS})
 add_dependencies(dingodb_client_meta ${DEPEND_LIBS})
+
+add_dependencies(test_server ${DEPEND_LIBS})
+add_dependencies(test_client ${DEPEND_LIBS})
 
 if(DINGO_BUILD_STATIC)
     message(STATUS "Build DingoDB with static libraries linking")
@@ -229,6 +234,15 @@ target_link_libraries(dingodb_client_coordinator
                       ${DYNAMIC_LIB}
                       "-Xlinker \"-)\"")
 target_link_libraries(dingodb_client_meta
+                      "-Xlinker \"-(\""
+                      ${DYNAMIC_LIB}
+                      "-Xlinker \"-)\"")
+
+target_link_libraries(test_server
+                      "-Xlinker \"-(\""
+                      ${DYNAMIC_LIB}
+                      "-Xlinker \"-)\"")
+target_link_libraries(test_client
                       "-Xlinker \"-(\""
                       ${DYNAMIC_LIB}
                       "-Xlinker \"-)\"")

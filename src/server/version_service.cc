@@ -47,7 +47,7 @@ int VersionService::DelListenableVersion(VersionType type, uint64_t id) {
     while (version_listener->ref_count != 0) {
       lock.unlock();
       version_listener->condition.notify_all();
-      sleep(1);
+      bthread_usleep(1000 * 1000);
       lock.lock();
     }
     delete version_listener;
